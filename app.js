@@ -1,7 +1,7 @@
 (function() {
     const cartBtn = document.querySelector('.cart-btn');
     const cartOverlay = document.querySelector('.cart-overlay');
-    const cartDOM = document.querySelector('.cart');
+    const cartEl = document.querySelector('.cart');
     const closeCartBtn = document.querySelector('.close-cart');
     const cartContent = document.querySelector('.cart-content');
     const cartItemsCount = document.querySelector('.cart-items');
@@ -25,12 +25,12 @@
 
     const showCart = () => {
         cartOverlay.classList.add('transparentBcg');
-        cartDOM.classList.add('showCart');
+        cartEl.classList.add('showCart');
     };
 
     const hideCart = () => {
         cartOverlay.classList.remove('transparentBcg');
-        cartDOM.classList.remove('showCart');
+        cartEl.classList.remove('showCart');
     };
 
     const createNode = (type, classes, content) => {
@@ -213,6 +213,10 @@
     clearCartBtn.addEventListener('click', function() {
         this.setAttribute('disabled', true);
         clearCart();
+
+        setTimeout(() => {
+            hideCart();
+        }, 500);
     });
     cartBtn.addEventListener('click', showCart);
     closeCartBtn.addEventListener('click', hideCart);
