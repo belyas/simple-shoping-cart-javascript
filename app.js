@@ -5,6 +5,7 @@
     const closeCartBtn = document.querySelector('.close-cart');
     const cartContent = document.querySelector('.cart-content');
     const cartItemsCount = document.querySelector('.cart-items');
+    const cartTotalPrice = document.querySelector('.cart-total');
     const avaialableProducts = [];
     const cart = { items: [], totalPrice: 0 };
 
@@ -19,6 +20,7 @@
 
         return formattedPrice;
     };
+    const itemTotalPrice = price => qty => +parseFloat(price * qty).toFixed(2);
 
     const showCart = () => {
         cartOverlay.classList.add('transparentBcg');
@@ -62,6 +64,15 @@
         });
     };
 
+    const calcTotalCartPrice = () => {
+        cart.totalPrice = 0;
+        cart.items.length &&
+            cart.items.forEach(
+                item =>
+                    (cart.totalPrice += itemTotalPrice(item.price)(item.qty))
+            );
+    };
+
     const addItemTocart = itemId => {
         const product = avaialableProducts.filter(
             prod => prod.id === itemId
@@ -88,6 +99,9 @@
         console.log(cart);
         // update cart items icon
         cartItemsCount.textContent = cart.items.length;
+        // re-calculcate total cart price
+        calcTotalCartPrice();
+        cartTotalPrice.textContent = formatPrice(cart.totalPrice);
     };
 
     const loadProductsFromJson = async () => {
