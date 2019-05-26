@@ -6,8 +6,9 @@
     const cartContent = document.querySelector('.cart-content');
     const cartItemsCount = document.querySelector('.cart-items');
     const cartTotalPrice = document.querySelector('.cart-total');
+    const clearCartBtn = document.querySelector('.clear-cart');
     const avaialableProducts = [];
-    const cart = { items: [], totalPrice: 0 };
+    let cart = { items: [], totalPrice: 0 };
 
     const formatPrice = (price, currency = '$') => {
         let formattedPrice = price;
@@ -80,6 +81,7 @@
         const itemNode = createNode('div', 'cart-item', itemContent);
 
         cartContent.appendChild(itemNode);
+        clearCartBtn.removeAttribute('disabled');
 
         // attach event to remove button
         itemNode
@@ -94,6 +96,13 @@
             cart.items.forEach(product => {
                 renderCartItemLayout(product)(formatPrice);
             });
+    };
+
+    const updatCartGlobalData = () => {
+        // update cart items icon
+        cartItemsCount.textContent = cart.items.length;
+        // re-calculcate total cart price
+        cartTotalPrice.textContent = formatPrice(calcTotalCartPrice());
     };
 
     const addItemTocart = itemId => {
@@ -117,10 +126,7 @@
             renderCartItemLayout(product)(formatPrice);
         }
 
-        // update cart items icon
-        cartItemsCount.textContent = cart.items.length;
-        // re-calculcate total cart price
-        cartTotalPrice.textContent = formatPrice(calcTotalCartPrice());
+        updatCartGlobalData();
     };
 
     const removeItemFromItem = function() {
@@ -128,12 +134,20 @@
         const updatedCart = [...cart.items];
 
         cart.items = updatedCart.filter(item => item.id !== itemId);
-        // update cart items icon
-        cartItemsCount.textContent = cart.items.length;
-        // re-calculcate total cart price
-        cartTotalPrice.textContent = formatPrice(calcTotalCartPrice());
+
+        if (cart.items.length === 0) {
+            clearCartBtn.setAttribute('disabled', true);
+        }
 
         renderCartItemsLayout();
+        updatCartGlobalData();
+    };
+
+    const clearCart = () => {
+        cart = { items: [], totalPrice: 0 };
+
+        renderCartItemsLayout();
+        updatCartGlobalData();
     };
 
     const loadProductsFromJson = async () => {
@@ -192,6 +206,10 @@
     // Display products from json file
     createProductsGrids(loadProductsFromJson)(formatPrice);
 
+    clearCartBtn.addEventListener('click', function() {
+        this.setAttribute('disabled', true);
+        clearCart();
+    });
     cartBtn.addEventListener('click', showCart);
     closeCartBtn.addEventListener('click', hideCart);
 })();
