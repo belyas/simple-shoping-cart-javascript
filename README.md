@@ -1,3 +1,3 @@
-# my-shop-javascript
+# Shopping cart in Vanilla JavaScript
 
-Simple shop based on Vanilla Javascript
+Simple shopping cart based on Vanilla Javascript
