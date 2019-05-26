@@ -3,6 +3,9 @@
     const cartOverlay = document.querySelector('.cart-overlay');
     const cartDOM = document.querySelector('.cart');
     const closeCartBtn = document.querySelector('.close-cart');
+    const cartContent = document.querySelector('.cart-content');
+    const avaialableProducts = [];
+    const cart = { items: [], totalPrice: 0 };
 
     const formatPrice = (price, currency = '$') => {
         let formattedPrice = price;
@@ -24,6 +27,35 @@
     const hideCart = () => {
         cartOverlay.classList.remove('transparentBcg');
         cartDOM.classList.remove('showCart');
+    };
+
+    const createNode = (type, classes, content) => {
+        const elem = document.createElement(type);
+        elem.classList.add(classes);
+        elem.innerHTML = content;
+
+        return elem;
+    };
+    const createCartItemContent = item => formatter => {
+        return `<img src="${item.image_url}" alt="${item.title}" />
+            <div>
+                <h4>${item.title}</h4>
+                <h5>${formatter(item.price)}</h5>
+                <span class="remove-item" data-id="${item.id}">remove</span>
+            </div>
+            <div>
+                <i class="fas fa-chevron-up" data-id="${item.id}"></i>
+                <p class="item-amount">${item.qty}</p>
+                <i class="fas fa-chevron-down" data-id="${item.id}"></i>
+            </div>`;
+    };
+
+    const addItemTocart = itemId => {
+        const product = avaialableProducts.filter(prod => prod.id === itemId);
+        const itemContent = createCartItemContent(product[0])(formatPrice);
+        const itemNode = createNode('div', 'cart-item', itemContent);
+
+        cartContent.appendChild(itemNode);
     };
 
     const loadProductsFromJson = async () => {
@@ -60,10 +92,19 @@
         let _html = '';
 
         products.items.forEach(product => {
+            avaialableProducts.push({ ...product, qty: 1 });
             _html += productGridLayout(product)(formatter);
         });
 
         productsContainer.innerHTML = _html;
+
+        // attach button to click event
+        document.querySelectorAll('.bag-btn').forEach(btn =>
+            btn.addEventListener('click', function(event) {
+                const ItemId = +btn.dataset.id;
+                addItemTocart(ItemId);
+            })
+        );
     };
 
     // Display products from json file
