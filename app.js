@@ -151,10 +151,14 @@
     };
 
     const loadProductsFromJson = async () => {
-        const result = await fetch('products.json');
-        const products = await result.json();
+        try {
+            const result = await fetch('products.json');
+            const products = await result.json();
 
-        return products;
+            return products;
+        } catch (err) {
+            console.log(err);
+        }
     };
 
     const productGridLayout = product => formatter => {
