@@ -4,6 +4,7 @@
     const cartDOM = document.querySelector('.cart');
     const closeCartBtn = document.querySelector('.close-cart');
     const cartContent = document.querySelector('.cart-content');
+    const cartItemsCount = document.querySelector('.cart-items');
     const avaialableProducts = [];
     const cart = { items: [], totalPrice: 0 };
 
@@ -50,12 +51,32 @@
             </div>`;
     };
 
-    const addItemTocart = itemId => {
-        const product = avaialableProducts.filter(prod => prod.id === itemId);
-        const itemContent = createCartItemContent(product[0])(formatPrice);
-        const itemNode = createNode('div', 'cart-item', itemContent);
+    const itemExists = itemId =>
+        cart.items.findIndex(item => item.id && item.id === itemId);
 
-        cartContent.appendChild(itemNode);
+    const addItemTocart = itemId => {
+        const product = avaialableProducts.filter(
+            prod => prod.id === itemId
+        )[0];
+        const itemContent = createCartItemContent(product)(formatPrice);
+        const itemNode = createNode('div', 'cart-item', itemContent);
+        const currentItemIndex = itemExists(itemId);
+
+        if (currentItemIndex > -1) {
+            const updatedCart = [...cart.items];
+            updatedCart[currentItemIndex] = {
+                ...updatedCart[currentItemIndex],
+                qty: updatedCart[currentItemIndex].qty + 1,
+            };
+
+            cart.items = updatedCart;
+        } else {
+            cart.items.push(product);
+            cartContent.appendChild(itemNode);
+        }
+
+        console.log(cart);
+        cartItemsCount.textContent = cart.items.length;
     };
 
     const loadProductsFromJson = async () => {
