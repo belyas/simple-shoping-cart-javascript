@@ -46,13 +46,21 @@
             </div>
             <div>
                 <i class="fas fa-chevron-up" data-id="${item.id}"></i>
-                <p class="item-amount">${item.qty}</p>
+                <p class="item-amount" data-id="${item.id}">${item.qty}</p>
                 <i class="fas fa-chevron-down" data-id="${item.id}"></i>
             </div>`;
     };
 
     const itemExists = itemId =>
         cart.items.findIndex(item => item.id && item.id === itemId);
+
+    const updateCartItemQty = item => {
+        document.querySelectorAll('.item-amount').forEach(amount => {
+            if (+amount.dataset.id === item.id) {
+                amount.textContent = item.qty;
+            }
+        });
+    };
 
     const addItemTocart = itemId => {
         const product = avaialableProducts.filter(
@@ -70,12 +78,15 @@
             };
 
             cart.items = updatedCart;
+            // update individual item in cart's quantity
+            updateCartItemQty(updatedCart[currentItemIndex]);
         } else {
             cart.items.push(product);
             cartContent.appendChild(itemNode);
         }
 
         console.log(cart);
+        // update cart items icon
         cartItemsCount.textContent = cart.items.length;
     };
 
@@ -107,6 +118,15 @@
         </article>`;
     };
 
+    const addToCartBtnHandler = () => {
+        document.querySelectorAll('.bag-btn').forEach(btn =>
+            btn.addEventListener('click', function(event) {
+                const ItemId = +btn.dataset.id;
+                addItemTocart(ItemId);
+            })
+        );
+    };
+
     const createProductsGrids = loadProductsfunc => async formatter => {
         const productsContainer = document.getElementById('products-container');
         const products = await loadProductsfunc();
@@ -120,12 +140,7 @@
         productsContainer.innerHTML = _html;
 
         // attach button to click event
-        document.querySelectorAll('.bag-btn').forEach(btn =>
-            btn.addEventListener('click', function(event) {
-                const ItemId = +btn.dataset.id;
-                addItemTocart(ItemId);
-            })
-        );
+        addToCartBtnHandler();
     };
 
     // Display products from json file
