@@ -8,7 +8,8 @@
     const cartTotalPrice = document.querySelector('.cart-total');
     const clearCartBtn = document.querySelector('.clear-cart');
     const avaialableProducts = [];
-    let cart = { items: [], totalPrice: 0 };
+    const cartData = getcartData();
+    let cart = cartData || { items: [], totalPrice: 0 };
 
     const formatPrice = (price, currency = '$') => {
         let formattedPrice = price;
@@ -21,6 +22,7 @@
 
         return formattedPrice;
     };
+
     const itemTotalPrice = price => qty => +parseFloat(price * qty).toFixed(2);
 
     const showCart = () => {
@@ -112,6 +114,8 @@
         cartItemsCount.textContent = cart.items.length;
         // re-calculcate total cart price
         cartTotalPrice.textContent = formatPrice(calcTotalCartPrice());
+        // update local storage
+        setcartData(cart);
     };
 
     const addItemTocart = itemId => {
@@ -250,8 +254,19 @@
         addToCartBtnHandler();
     };
 
+    function getcartData() {
+        return JSON.parse(localStorage.getItem('cartData'));
+    }
+
+    const setcartData = data => {
+        localStorage.setItem('cartData', JSON.stringify(data));
+    };
+
     // Display products from json file
     createProductsGrids(loadProductsFromJson)(formatPrice);
+    // init cart items if exists
+    renderCartItemsLayout();
+    updatCartGlobalData();
 
     clearCartBtn.addEventListener('click', function() {
         this.setAttribute('disabled', true);
