@@ -40,6 +40,7 @@
 
         return elem;
     };
+
     const createCartItemContent = item => formatter => {
         return `<img src="${item.image_url}" alt="${item.title}" />
             <div>
@@ -86,7 +87,15 @@
         // attach event to remove button
         itemNode
             .querySelector('.remove-item')
-            .addEventListener('click', removeItemFromItem);
+            .addEventListener('click', removeItemFromCart);
+        // attach event to add item's qty button
+        itemNode
+            .querySelector('.fa-chevron-up')
+            .addEventListener('click', addItemQty);
+        // attach event to remove item's qty button
+        itemNode
+            .querySelector('.fa-chevron-down')
+            .addEventListener('click', removeItemQty);
     };
 
     const renderCartItemsLayout = () => {
@@ -129,8 +138,13 @@
         updatCartGlobalData();
     };
 
-    const removeItemFromItem = function() {
+    const removeItemFromCart = function(event) {
         const itemId = +this.dataset.id;
+
+        removeItem(itemId);
+    };
+
+    const removeItem = itemId => {
         const updatedCart = [...cart.items];
 
         cart.items = updatedCart.filter(item => item.id !== itemId);
@@ -141,6 +155,35 @@
 
         renderCartItemsLayout();
         updatCartGlobalData();
+    };
+
+    const addItemQty = function(event) {
+        const itemId = +this.dataset.id;
+
+        addItemTocart(itemId);
+    };
+
+    const removeItemQty = function(event) {
+        const itemId = +this.dataset.id;
+        const currentItemIndex = itemExists(itemId);
+        const updatedCart = [...cart.items];
+
+        updatedCart[currentItemIndex] = {
+            ...updatedCart[currentItemIndex],
+            qty: updatedCart[currentItemIndex].qty - 1,
+        };
+
+        cart.items = updatedCart;
+
+        // update individual item in cart's quantity
+        updateCartItemQty(updatedCart[currentItemIndex]);
+
+        // remove item from cart if no qty remains
+        if (updatedCart[currentItemIndex].qty <= 0) {
+            removeItem(itemId);
+        } else {
+            updatCartGlobalData();
+        }
     };
 
     const clearCart = () => {
